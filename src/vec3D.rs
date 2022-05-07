@@ -41,3 +41,9 @@ impl Sub for Vec3D {
         }
     }
 }
+
+impl Vec3D {
+    pub fn new(x: f64, y: f64, z: f64) -> Vec3D {
+        Vec3D { x, y, z }
+    }
+}

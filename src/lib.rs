@@ -6,6 +6,8 @@ extern crate web_sys;
 
 // mod animation_requester;
 // mod smiley;
+
+// This is where the screen is rendered at each animation frame
 mod scene;
 
 mod tri2D;

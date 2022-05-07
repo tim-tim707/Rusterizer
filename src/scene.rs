@@ -27,45 +27,39 @@ impl Scene {
             canvas,
             ctx,
             tris: Vec::from([
-                Tri2D {
-                    a: Vec2D { x: 1.0, y: 1.0 },
-                    b: Vec2D { x: 0.1, y: 0.1 },
-                    c: Vec2D { x: 0.3, y: 0.3 },
-                },
-                Tri2D {
-                    a: Vec2D { x: 0.4, y: 0.4 },
-                    b: Vec2D { x: 0.4, y: 0.7 },
-                    c: Vec2D { x: 0.7, y: 0.7 },
-                },
-                Tri2D {
-                    a: Vec2D { x: -0.9, y: -0.9 },
-                    b: Vec2D { x: 0.2, y: 0.7 },
-                    c: Vec2D { x: -0.3, y: -0.4 },
-                },
+                Tri2D::new(
+                    Vec2D::new(1.0, 1.0),
+                    Vec2D::new(0.1, 0.1),
+                    Vec2D::new(0.3, 0.3),
+                ),
+                Tri2D::new(
+                    Vec2D::new(0.4, 0.4),
+                    Vec2D::new(0.4, 0.7),
+                    Vec2D::new(0.7, 0.7),
+                ),
+                Tri2D::new(
+                    Vec2D::new(-0.9, -0.9),
+                    Vec2D::new(0.2, 0.7),
+                    Vec2D::new(-0.3, -0.4),
+                ),
             ]),
         }
     }
 
     fn draw_hollow(&self, tri: &Tri2D) {
         self.ctx.begin_path();
-        let Vec2D { x, y } = tri.a;
-        self.ctx.move_to(x, y);
-        let Vec2D { x, y } = tri.b;
-        self.ctx.line_to(x, y);
-        let Vec2D { x, y } = tri.c;
-        self.ctx.line_to(x, y);
+        self.ctx.move_to(tri[0][0], tri[0][1]);
+        self.ctx.line_to(tri[1][0], tri[1][1]);
+        self.ctx.line_to(tri[2][0], tri[2][1]);
         self.ctx.close_path();
         self.ctx.stroke();
     }
 
     fn draw_tri(&self, tri: &Tri2D) {
         self.ctx.begin_path();
-        let Vec2D { x, y } = tri.a;
-        self.ctx.move_to(x, y);
-        let Vec2D { x, y } = tri.b;
-        self.ctx.line_to(x, y);
-        let Vec2D { x, y } = tri.c;
-        self.ctx.line_to(x, y);
+        self.ctx.move_to(tri[0][0], tri[0][1]);
+        self.ctx.line_to(tri[1][0], tri[1][1]);
+        self.ctx.line_to(tri[2][0], tri[2][1]);
         self.ctx.set_fill_style(&"rgb(200,200,200)".into());
         self.ctx.fill();
     }
@@ -102,21 +96,15 @@ impl Scene {
     // z = w(x + 1) / 2
     fn ndc_to_screen(&self) -> Vec<Tri2D> {
         let mut res = Vec::new();
+        let w = (self.canvas.width() / 2) as f64;
+        let h = (self.canvas.height() / 2) as f64;
         for tri in &self.tris {
-            let tri_fit: Tri2D = Tri2D {
-                a: Vec2D {
-                    x: (tri.a.x + 1.0) * (self.canvas.width() / 2) as f64,
-                    y: (tri.a.y + 1.0) * (self.canvas.height() / 2) as f64,
-                },
-                b: Vec2D {
-                    x: (tri.b.x + 1.0) * (self.canvas.width() / 2) as f64,
-                    y: (tri.b.y + 1.0) * (self.canvas.height() / 2) as f64,
-                },
-                c: Vec2D {
-                    x: (tri.c.x + 1.0) * (self.canvas.width() / 2) as f64,
-                    y: (tri.c.y + 1.0) * (self.canvas.height() / 2) as f64,
-                },
-            };
+            let tri_fit: Tri2D = Tri2D::new(
+                Vec2D::new((tri[0][0] + 1.0) * w, (tri[0][1] + 1.0) * h),
+                Vec2D::new((tri[1][0] + 1.0) * w, (tri[1][1] + 1.0) * h),
+                Vec2D::new((tri[2][0] + 1.0) * w, (tri[2][1] + 1.0) * h),
+            );
+
             res.push(tri_fit);
         }
         res

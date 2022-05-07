@@ -2,8 +2,9 @@ import { Scene } from "wasm-game-of-life";
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
 
-const canvas = document.getElementById("smiley_canvas");
-console.log(canvas.width, canvas.height);
+const canvas = document.getElementById("canvas");
+canvas.width = 720;
+canvas.height = 480;
 
 const scene = Scene.new(canvas);
 let animationId = null;

@@ -19,3 +19,9 @@ impl Index<u8> for Tri2D {
         }
     }
 }
+
+impl Tri2D {
+    pub fn new(a: Vec2D, b: Vec2D, c: Vec2D) -> Tri2D {
+        Tri2D { a, b, c }
+    }
+}

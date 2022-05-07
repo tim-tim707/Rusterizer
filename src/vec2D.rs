@@ -37,3 +37,9 @@ impl Sub for Vec2D {
         }
     }
 }
+
+impl Vec2D {
+    pub fn new(x: f64, y: f64) -> Vec2D {
+        Vec2D { x, y }
+    }
+}
