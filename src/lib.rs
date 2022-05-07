@@ -1,12 +1,14 @@
-use wasm_bindgen::prelude::wasm_bindgen;
+// use wasm_bindgen::prelude::wasm_bindgen;
 
 extern crate cfg_if;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
-mod drawer;
+// mod animation_requester;
+// mod smiley;
+mod scene;
 
-#[wasm_bindgen(start)]
-pub fn main() {
-    drawer::start();
-}
+mod tri2D;
+mod tri3D;
+mod vec2D;
+mod vec3D;
