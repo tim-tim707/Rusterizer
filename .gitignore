@@ -4,3 +4,7 @@ wasm-pack.log
 Cargo.lock
 www/dist/
 www/package-lock.json
+src/animation_requester.rs
+src/smiley.rs
+www/universe_index.js
+src/smiley.rs
