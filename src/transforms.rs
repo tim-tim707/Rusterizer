@@ -1,4 +1,4 @@
-use std::ops::Index;
+use std::{f64::consts::PI, ops::Index};
 
 use crate::vec3D::Vec3D;
 
@@ -94,6 +94,18 @@ impl Mat3D {
                 [0.0, gamma.cos(), -gamma.sin(), 0.0],
                 [0.0, gamma.sin(), gamma.cos(), 0.0],
                 [0.0, 0.0, 0.0, 1.0],
+            ],
+        }
+    }
+
+    pub fn projection(fov: f64, aspect_ratio: f64, near: f64, far: f64) -> Mat3D {
+        let fov_rad = 1.0 / (fov * PI / 360.0).tan();
+        Mat3D {
+            data: [
+                [aspect_ratio * fov_rad, 0.0, 0.0, 0.0],
+                [0.0, fov_rad, 0.0, 0.0],
+                [0.0, 0.0, far / (far - near), 1.0],
+                [0.0, 0.0, (-far * near) / (far - near), 0.0],
             ],
         }
     }

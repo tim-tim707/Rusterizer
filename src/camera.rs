@@ -5,7 +5,7 @@ use crate::vec3D::Vec3D;
 pub struct Camera {
     pub yaw: f64,
     pub pos: Vec3D,
-    look_dir: Vec3D,
+    pub look_dir: Vec3D,
     view_mat: Mat3D,
 }
 
