@@ -8,9 +8,11 @@ canvas.height = 480;
 
 const scene = Scene.new(canvas);
 let animationId = null;
+var tick_nb = 0
 
 const renderLoop = () => {
-    scene.tick();
+    scene.tick(tick_nb);
+    tick_nb += 0.01;
     animationId = requestAnimationFrame(renderLoop);
 };
 

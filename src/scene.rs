@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::console;
 
+use crate::transforms::Mat2D;
 use crate::tri2D::Tri2D;
 use crate::vec2D::Vec2D;
 
@@ -84,7 +85,7 @@ impl Scene {
         }
     }
 
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self, time: f64) {
         self.ctx.clear_rect(
             0.into(),
             0.into(),
@@ -94,12 +95,19 @@ impl Scene {
         self.tris[0].a.x += 0.02;
 
         let mut tris: Vec<Tri2D> = self.tris.clone();
-        self.apply_transforms(&mut tris);
+        self.apply_transforms(&mut tris, time);
         self.ndc_to_screen(&mut tris);
         self.draw_from_vec(&tris);
     }
 
-    fn apply_transforms(&self, tris: &mut Vec<Tri2D>) {}
+    // TODO: should apply on objects
+    fn apply_transforms(&self, tris: &mut Vec<Tri2D>, time: f64) {
+        let rotating = &mut tris[3];
+
+        rotating[0] = rotating[0].mul(Mat2D::rot_x(time));
+        rotating[1] = rotating[1].mul(Mat2D::rot_x(time));
+        rotating[2] = rotating[2].mul(Mat2D::rot_x(time));
+    }
 
     // take NDC coordinates [(-1,-1), (1,1)] to screen [(0, 0), (width, height)]
     // note that this flip the screen on horizontal axis

@@ -22,6 +22,12 @@ impl Mat2D {
             data: [[a, b], [c, d]],
         }
     }
+
+    pub fn rot_x(alpha: f64) -> Mat2D {
+        Mat2D {
+            data: [[alpha.cos(), -alpha.sin()], [alpha.sin(), alpha.cos()]],
+        }
+    }
 }
 
 pub struct Mat3D {
