@@ -15,3 +15,5 @@ mod tri2D;
 mod tri3D;
 mod vec2D;
 mod vec3D;
+
+mod camera;

@@ -1,4 +1,4 @@
-use crate::vec3D::Vec3D;
+use crate::{transforms::Mat3D, vec3D::Vec3D};
 use std::ops::Index;
 
 #[derive(Debug, Clone, Copy)]
@@ -42,5 +42,9 @@ impl Tri3D {
             b: Vec3D::new(d, e, f),
             c: Vec3D::new(g, h, i),
         }
+    }
+
+    pub fn mul(&self, other: Mat3D) -> Tri3D {
+        Tri3D::new(self.a.mul(other), self.b.mul(other), self.c.mul(other))
     }
 }

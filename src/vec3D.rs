@@ -8,6 +8,7 @@ pub struct Vec3D {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+    pub w: f64,
 }
 
 impl Index<u8> for Vec3D {
@@ -30,6 +31,7 @@ impl Add for Vec3D {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
+            w: self.w,
         }
     }
 }
@@ -41,24 +43,47 @@ impl Sub for Vec3D {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
+            w: self.w,
         }
     }
 }
 
 impl Vec3D {
     pub fn new(x: f64, y: f64, z: f64) -> Vec3D {
-        Vec3D { x, y, z }
+        Vec3D { x, y, z, w: 1.0 }
     }
 
     pub fn mul(self, rhs: Mat3D) -> Vec3D {
         Vec3D {
-            x: self.x * rhs[0][0] + self.y * rhs[0][1] + self.z * rhs[0][2],
-            y: self.x * rhs[1][0] + self.y * rhs[1][1] + self.z * rhs[1][2],
-            z: self.x * rhs[2][0] + self.y * rhs[2][1] + self.z * rhs[2][2],
+            x: self.x * rhs[0][0] + self.y * rhs[1][0] + self.z * rhs[2][0] + self.w * rhs[3][0],
+            y: self.x * rhs[0][1] + self.y * rhs[1][1] + self.z * rhs[2][1] + self.w * rhs[3][1],
+            z: self.x * rhs[0][2] + self.y * rhs[1][2] + self.z * rhs[2][2] + self.w * rhs[3][2],
+            w: self.x * rhs[0][3] + self.y * rhs[1][3] + self.z * rhs[2][3] + self.w * rhs[3][3],
         }
     }
+
+    pub fn scale(self, alpha: f64) -> Vec3D {
+        Vec3D::new(self.x * alpha, self.y * alpha, self.z * alpha)
+    }
+
+    pub fn dot_product(self, other: Vec3D) -> f64 {
+        (self.x * other.x + self.y * other.y + self.z * other.z).sqrt()
+    }
+
+    pub fn length(self) -> f64 {
+        self.dot_product(self).sqrt()
+    }
+
     pub fn normalized(self) -> Vec3D {
-        let norm = (self.x * self.x + self.y * self.y + self.z * self.z).sqrt();
-        Vec3D::new(self.x / norm, self.y / norm, self.z / norm)
+        let l = self.length();
+        Vec3D::new(self.x / l, self.y / l, self.z / l)
+    }
+
+    pub fn cross_product(self, other: Vec3D) -> Vec3D {
+        Vec3D::new(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
+        )
     }
 }

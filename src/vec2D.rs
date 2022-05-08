@@ -6,6 +6,7 @@ use crate::transforms::Mat2D;
 pub struct Vec2D {
     pub x: f64,
     pub y: f64,
+    pub w: f64,
 }
 
 impl Index<u8> for Vec2D {
@@ -26,6 +27,7 @@ impl Add for Vec2D {
         Self {
             x: self.x + other.x,
             y: self.y + other.y,
+            w: self.w,
         }
     }
 }
@@ -36,19 +38,21 @@ impl Sub for Vec2D {
         Self {
             x: self.x - other.x,
             y: self.y - other.y,
+            w: self.w,
         }
     }
 }
 
 impl Vec2D {
     pub fn new(x: f64, y: f64) -> Vec2D {
-        Vec2D { x, y }
+        Vec2D { x, y, w: 1.0 }
     }
 
     pub fn mul(self, rhs: Mat2D) -> Vec2D {
         Vec2D {
             x: self.x * rhs[0][0] + self.y * rhs[0][1],
             y: self.x * rhs[1][0] + self.y * rhs[1][1],
+            w: self.w,
         }
     }
 

@@ -4,15 +4,18 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::console;
 
+use crate::camera::Camera;
 use crate::transforms::Mat2D;
 use crate::tri2D::Tri2D;
+use crate::tri3D::Tri3D;
 use crate::vec2D::Vec2D;
-
 #[wasm_bindgen]
 pub struct Scene {
     canvas: web_sys::HtmlCanvasElement,
     ctx: web_sys::CanvasRenderingContext2d,
-    tris: Vec<Tri2D>,
+    // tris: Vec<Tri2D>,
+    tris: Vec<Tri3D>,
+    camera: Camera,
 }
 
 #[wasm_bindgen]
@@ -29,26 +32,32 @@ impl Scene {
             canvas,
             ctx,
             tris: Vec::from([
-                Tri2D::new(
-                    Vec2D::new(0.9, 0.9),
-                    Vec2D::new(0.1, 0.1),
-                    Vec2D::new(0.5, 0.5),
-                ),
-                Tri2D::new(
-                    Vec2D::new(0.8, 0.8),
-                    Vec2D::new(0.7, 0.8),
-                    Vec2D::new(0.7, 0.7),
-                ),
-                Tri2D::new(
-                    Vec2D::new(0.4, 0.4),
-                    Vec2D::new(0.4, 0.7),
-                    Vec2D::new(0.7, 0.7),
-                ),
-                Tri2D::new(
-                    Vec2D::new(-0.9, -0.9),
-                    Vec2D::new(0.2, 0.7),
-                    Vec2D::new(-0.3, -0.4),
-                ),
+                Tri3D::from_points(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0),
+                Tri3D::from_points(0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0),
+                Tri3D::from_points(1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0),
+                Tri3D::from_points(1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0),
+                Tri3D::from_points(1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0),
+                Tri3D::from_points(1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0),
+                // Tri2D::new(
+                //     Vec2D::new(0.9, 0.9),
+                //     Vec2D::new(0.1, 0.1),
+                //     Vec2D::new(0.5, 0.5),
+                // ),
+                // Tri2D::new(
+                //     Vec2D::new(0.8, 0.8),
+                //     Vec2D::new(0.7, 0.8),
+                //     Vec2D::new(0.7, 0.7),
+                // ),
+                // Tri2D::new(
+                //     Vec2D::new(0.4, 0.4),
+                //     Vec2D::new(0.4, 0.7),
+                //     Vec2D::new(0.7, 0.7),
+                // ),
+                // Tri2D::new(
+                //     Vec2D::new(-0.9, -0.9),
+                //     Vec2D::new(0.2, 0.7),
+                //     Vec2D::new(-0.3, -0.4),
+                // ),
             ]),
         }
     }
