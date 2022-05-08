@@ -2,6 +2,7 @@ use std::f64;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use web_sys::console;
 
 use crate::tri2D::Tri2D;
 use crate::vec2D::Vec2D;
@@ -28,9 +29,14 @@ impl Scene {
             ctx,
             tris: Vec::from([
                 Tri2D::new(
-                    Vec2D::new(1.0, 1.0),
+                    Vec2D::new(0.9, 0.9),
                     Vec2D::new(0.1, 0.1),
-                    Vec2D::new(0.3, 0.3),
+                    Vec2D::new(0.5, 0.5),
+                ),
+                Tri2D::new(
+                    Vec2D::new(0.8, 0.8),
+                    Vec2D::new(0.7, 0.8),
+                    Vec2D::new(0.7, 0.7),
                 ),
                 Tri2D::new(
                     Vec2D::new(0.4, 0.4),
@@ -71,7 +77,7 @@ impl Scene {
         }
     }
 
-    fn draw_from_vec(&self, tris: Vec<Tri2D>) {
+    fn draw_from_vec(&self, tris: &Vec<Tri2D>) {
         for tri in tris {
             self.draw_tri(&tri);
             self.draw_hollow(&tri);
@@ -86,27 +92,27 @@ impl Scene {
             self.canvas.height().into(),
         );
         self.tris[0].a.x += 0.02;
-        self.draw_from_vec(self.ndc_to_screen());
+
+        let mut tris: Vec<Tri2D> = self.tris.clone();
+        self.apply_transforms(&mut tris);
+        self.ndc_to_screen(&mut tris);
+        self.draw_from_vec(&tris);
     }
+
+    fn apply_transforms(&self, tris: &mut Vec<Tri2D>) {}
 
     // take NDC coordinates [(-1,-1), (1,1)] to screen [(0, 0), (width, height)]
     // note that this flip the screen on horizontal axis
     // x = w(x + 1) / 2
     // y = w(y + 1) / 2
     // z = w(x + 1) / 2
-    fn ndc_to_screen(&self) -> Vec<Tri2D> {
-        let mut res = Vec::new();
+    fn ndc_to_screen(&self, tris: &mut Vec<Tri2D>) {
         let w = (self.canvas.width() / 2) as f64;
         let h = (self.canvas.height() / 2) as f64;
-        for tri in &self.tris {
-            let tri_fit: Tri2D = Tri2D::new(
-                Vec2D::new((tri[0][0] + 1.0) * w, (tri[0][1] + 1.0) * h),
-                Vec2D::new((tri[1][0] + 1.0) * w, (tri[1][1] + 1.0) * h),
-                Vec2D::new((tri[2][0] + 1.0) * w, (tri[2][1] + 1.0) * h),
-            );
-
-            res.push(tri_fit);
+        for tri in tris {
+            tri[0] = Vec2D::new((tri[0][0] + 1.0) * w, (tri[0][1] + 1.0) * h);
+            tri[1] = Vec2D::new((tri[1][0] + 1.0) * w, (tri[1][1] + 1.0) * h);
+            tri[2] = Vec2D::new((tri[2][0] + 1.0) * w, (tri[2][1] + 1.0) * h);
         }
-        res
     }
 }

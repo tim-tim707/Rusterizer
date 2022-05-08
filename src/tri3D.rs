@@ -1,6 +1,7 @@
 use crate::vec3D::Vec3D;
 use std::ops::Index;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Tri3D {
     pub a: Vec3D,
     pub b: Vec3D,
@@ -23,5 +24,23 @@ impl Index<u8> for Tri3D {
 impl Tri3D {
     pub fn new(a: Vec3D, b: Vec3D, c: Vec3D) -> Tri3D {
         Tri3D { a, b, c }
+    }
+
+    pub fn from_points(
+        a: f64,
+        b: f64,
+        c: f64,
+        d: f64,
+        e: f64,
+        f: f64,
+        g: f64,
+        h: f64,
+        i: f64,
+    ) -> Tri3D {
+        Tri3D {
+            a: Vec3D::new(a, b, c),
+            b: Vec3D::new(d, e, f),
+            c: Vec3D::new(g, h, i),
+        }
     }
 }

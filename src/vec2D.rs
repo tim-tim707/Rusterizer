@@ -1,6 +1,8 @@
 use std::f64;
 use std::ops::{Add, Index, Sub};
 
+use crate::transforms::Mat2D;
+#[derive(Debug, Clone, Copy)]
 pub struct Vec2D {
     pub x: f64,
     pub y: f64,
@@ -41,5 +43,17 @@ impl Sub for Vec2D {
 impl Vec2D {
     pub fn new(x: f64, y: f64) -> Vec2D {
         Vec2D { x, y }
+    }
+
+    pub fn mul(self, rhs: Mat2D) -> Vec2D {
+        Vec2D {
+            x: self.x * rhs[0][0] + self.y * rhs[0][1],
+            y: self.x * rhs[1][0] + self.y * rhs[1][1],
+        }
+    }
+
+    pub fn normalized(self) -> Vec2D {
+        let norm = (self.x * self.x + self.y * self.y).sqrt();
+        Vec2D::new(self.x / norm, self.y / norm)
     }
 }
