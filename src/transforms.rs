@@ -1,6 +1,6 @@
 use std::{f64::consts::PI, ops::Index};
 
-use crate::vec3D::Vec3D;
+use crate::{tri3D::Tri3D, vec3D::Vec3D};
 
 pub struct Mat2D {
     data: [[f64; 3]; 3],

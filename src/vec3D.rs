@@ -53,7 +53,7 @@ impl Vec3D {
         Vec3D { x, y, z, w: 1.0 }
     }
 
-    pub fn mul(self, rhs: Mat3D) -> Vec3D {
+    pub fn mul(self, rhs: &Mat3D) -> Vec3D {
         Vec3D {
             x: self.x * rhs[0][0] + self.y * rhs[1][0] + self.z * rhs[2][0] + self.w * rhs[3][0],
             y: self.x * rhs[0][1] + self.y * rhs[1][1] + self.z * rhs[2][1] + self.w * rhs[3][1],
@@ -85,5 +85,23 @@ impl Vec3D {
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
         )
+    }
+
+    pub fn intersect_plane(
+        plane_pos: &Vec3D,
+        plane_normal: &Vec3D,
+        line_start: &Vec3D,
+        line_end: &Vec3D,
+    ) -> Vec3D {
+        let plane_p = plane_normal.normalized();
+        let plane_d = -plane_normal.dot_product(*plane_pos);
+        let ad = line_start.dot_product(*plane_normal);
+        let bd = line_end.dot_product(*plane_normal);
+        let t = (-plane_d - ad) / (bd - ad);
+
+        let line_start_to_end = *line_end - *line_start;
+        let line_to_intersect = line_start_to_end.scale(t);
+
+        *line_start - line_to_intersect
     }
 }
