@@ -13,7 +13,7 @@ impl Camera {
     pub fn new() -> Camera {
         Camera {
             pos: Vec3D::new(0.0, 0.0, 0.0),
-            look_dir: Vec3D::new(0.0, 0.0, 0.0),
+            look_dir: Vec3D::new(1.0, 0.0, 0.0),
             yaw: 0.0,
             view_mat: Mat3D::new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
         }

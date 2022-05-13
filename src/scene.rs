@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::f64;
 
 use wasm_bindgen::prelude::*;
@@ -82,7 +81,7 @@ impl Scene {
         ctx.move_to(tri[0][0], tri[0][1]);
         ctx.line_to(tri[1][0], tri[1][1]);
         ctx.line_to(tri[2][0], tri[2][1]);
-        ctx.set_fill_style(&"rgb(200,200,200)".into());
+        ctx.set_fill_style(&"rgb(255,255,255)".into());
         ctx.fill();
     }
 
@@ -100,55 +99,124 @@ impl Scene {
             self.canvas.width().into(),
             self.canvas.height().into(),
         );
+        self.ctx.fill_rect(
+            0.into(),
+            0.into(),
+            self.canvas.width().into(),
+            self.canvas.height().into(),
+        );
+
+        let do_clip = false;
 
         let mut tris: Vec<Tri3D> = self.tris.clone();
+        console::log_2(
+            &JsValue::from_str("nb_tris: "),
+            &JsValue::from_f64(tris.len() as f64),
+        );
         Scene::apply_transforms(&mut tris, time);
-        Scene::to_view(&mut tris, &mut self.camera);
-
-        // clip near plane
-        Scene::clip_tris(
-            &mut tris,
-            Vec3D::new(0.0, 0.0, 0.1),
-            Vec3D::new(0.0, 0.0, 1.0),
+        console::log_1(&JsValue::from_str("transform applied..."));
+        //Scene::keep_visible(&mut tris, &self.camera.pos);
+        console::log_2(
+            &JsValue::from_str("nb visible tris: "),
+            &JsValue::from_f64(tris.len() as f64),
         );
 
+        Scene::to_view(&mut tris, &mut self.camera);
+        console::log_2(
+            &JsValue::from_str("to view..."),
+            &JsValue::from_f64(tris.len() as f64),
+        );
+
+        if do_clip {
+            // clip near plane
+            Scene::clip_tris(
+                &mut tris,
+                Vec3D::new(0.0, 0.0, 0.1),
+                Vec3D::new(0.0, 0.0, 1.0),
+            );
+            console::log_2(
+                &JsValue::from_str("clipped near..."),
+                &JsValue::from_f64(tris.len() as f64),
+            );
+        }
         Scene::project(&mut tris, &self.projection_matrix);
+        console::log_2(
+            &JsValue::from_str("projected..."),
+            &JsValue::from_f64(tris.len() as f64),
+        );
         Scene::to_ndc(&mut tris);
+        console::log_2(
+            &JsValue::from_str("to_ndc..."),
+            &JsValue::from_f64(tris.len() as f64),
+        );
         Scene::ndc_to_screen(&mut tris, self.canvas.width(), self.canvas.height());
+        console::log_2(
+            &JsValue::from_str("to_screen..."),
+            &JsValue::from_f64(tris.len() as f64),
+        );
         // sort via z coordinate
         tris.sort();
+        console::log_1(&JsValue::from_str("sorted..."));
 
-        // clip each side of the screen
-        Scene::clip_tris(
-            &mut tris,
-            Vec3D::new(0.0, 0.0, 0.0),
-            Vec3D::new(0.0, 1.0, 0.0),
-        );
-        Scene::clip_tris(
-            &mut tris,
-            Vec3D::new(0.0, (self.canvas.height() - 1) as f64, 0.0),
-            Vec3D::new(0.0, -1.0, 0.0),
-        );
-        Scene::clip_tris(
-            &mut tris,
-            Vec3D::new(0.0, 0.0, 0.0),
-            Vec3D::new(1.0, 0.0, 0.0),
-        );
-        Scene::clip_tris(
-            &mut tris,
-            Vec3D::new((self.canvas.width() - 1) as f64, 0.0, 0.0),
-            Vec3D::new(-1.0, 0.0, 0.0),
-        );
-
+        if do_clip {
+            // clip each side of the screen
+            Scene::clip_tris(
+                &mut tris,
+                Vec3D::new(0.0, 0.0, 0.0),
+                Vec3D::new(0.0, 1.0, 0.0),
+            );
+            Scene::clip_tris(
+                &mut tris,
+                Vec3D::new(0.0, (self.canvas.height() - 1) as f64, 0.0),
+                Vec3D::new(0.0, -1.0, 0.0),
+            );
+            Scene::clip_tris(
+                &mut tris,
+                Vec3D::new(0.0, 0.0, 0.0),
+                Vec3D::new(1.0, 0.0, 0.0),
+            );
+            Scene::clip_tris(
+                &mut tris,
+                Vec3D::new((self.canvas.width() - 1) as f64, 0.0, 0.0),
+                Vec3D::new(-1.0, 0.0, 0.0),
+            );
+            console::log_2(
+                &JsValue::from_str("nb in screen tris after clipping: "),
+                &JsValue::from_f64(tris.len() as f64),
+            );
+        }
         Scene::draw_from_vec(&tris, &mut self.ctx);
+        console::log_1(&JsValue::from_str("drew..."));
     }
 
     fn apply_transforms(tris: &mut Vec<Tri3D>, time: f64) {
-        let rotating = &mut tris[3];
+        let rotate_x = &Mat3D::rot_x(time);
+        let rotate_y = &Mat3D::rot_y(time);
+        let translation_vec = Vec3D::new(0.0, 0.0, 20.0);
 
-        rotating[0] = rotating[0].mul(&Mat3D::rot_x(time));
-        rotating[1] = rotating[1].mul(&Mat3D::rot_x(time));
-        rotating[2] = rotating[2].mul(&Mat3D::rot_x(time));
+        for tri in tris {
+            tri[0] = tri[0].mul(rotate_x);
+            tri[1] = tri[1].mul(rotate_x);
+            tri[2] = tri[2].mul(rotate_x);
+
+            tri[0] = tri[0].mul(rotate_y);
+            tri[1] = tri[1].mul(rotate_y);
+            tri[2] = tri[2].mul(rotate_y);
+
+            tri[0] = tri[0] + translation_vec;
+            tri[1] = tri[1] + translation_vec;
+            tri[2] = tri[2] + translation_vec;
+        }
+    }
+
+    fn keep_visible(tris: &mut Vec<Tri3D>, camera_pos: &Vec3D) {
+        tris.retain(|tri| {
+            let line1 = tri[1] - tri[0];
+            let line2 = tri[3] - tri[0];
+            let normal = line1.cross_product(line2).normalized();
+            let camera_ray = tri[0] - *camera_pos;
+            normal.dot_product(camera_ray) < 0.0
+        })
     }
 
     fn to_view(tris: &mut Vec<Tri3D>, camera: &mut Camera) {

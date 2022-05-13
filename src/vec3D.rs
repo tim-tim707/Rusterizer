@@ -93,10 +93,10 @@ impl Vec3D {
         line_start: &Vec3D,
         line_end: &Vec3D,
     ) -> Vec3D {
-        let plane_p = plane_normal.normalized();
-        let plane_d = -plane_normal.dot_product(*plane_pos);
-        let ad = line_start.dot_product(*plane_normal);
-        let bd = line_end.dot_product(*plane_normal);
+        let plane_n = plane_normal.normalized();
+        let plane_d = -plane_n.dot_product(*plane_pos);
+        let ad = line_start.dot_product(plane_n);
+        let bd = line_end.dot_product(plane_n);
         let t = (-plane_d - ad) / (bd - ad);
 
         let line_start_to_end = *line_end - *line_start;

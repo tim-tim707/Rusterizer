@@ -1,10 +1,14 @@
-import { Scene } from "wasm-game-of-life";
-import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
+import {
+    Scene
+} from "wasm-game-of-life";
+import {
+    memory
+} from "wasm-game-of-life/wasm_game_of_life_bg";
 
 
 const canvas = document.getElementById("canvas");
-canvas.width = 720;
-canvas.height = 480;
+canvas.width = 1600;
+canvas.height = 900;
 
 const scene = Scene.new(canvas);
 let animationId = null;
