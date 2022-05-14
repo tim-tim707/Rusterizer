@@ -11,9 +11,9 @@ extern crate web_sys;
 mod scene;
 
 mod transforms;
-mod tri2D;
+//mod tri2D;
 mod tri3D;
-mod vec2D;
+//mod vec2D;
 mod vec3D;
 
 mod camera;
