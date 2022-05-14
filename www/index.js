@@ -1,16 +1,12 @@
 import {
     Scene
 } from "wasm-game-of-life";
-import {
-    memory
-} from "wasm-game-of-life/wasm_game_of_life_bg";
-
 
 const canvas = document.getElementById("canvas");
 canvas.width = 1600;
 canvas.height = 900;
 
-const scene = Scene.new(canvas);
+const scene = Scene.new_teapot(canvas);
 let animationId = null;
 var tick_nb = 0
 
