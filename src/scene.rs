@@ -34,12 +34,24 @@ impl Scene {
             canvas,
             ctx,
             tris: Vec::from([
+                // south
                 Tri3D::from_points(0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0),
                 Tri3D::from_points(0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0),
+                // east
                 Tri3D::from_points(1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0),
                 Tri3D::from_points(1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0),
+                // north
                 Tri3D::from_points(1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0),
                 Tri3D::from_points(1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0),
+                // west
+                Tri3D::from_points(0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0),
+                Tri3D::from_points(0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
+                // top
+                Tri3D::from_points(0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+                Tri3D::from_points(0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0),
+                // bottom
+                Tri3D::from_points(1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0),
+                Tri3D::from_points(1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0),
             ]),
             camera: Camera::new(),
             projection_matrix: Mat3D::projection(90.0, screen_height / screen_width, 0.1, 1000.0),
@@ -48,12 +60,6 @@ impl Scene {
 
     pub fn tick(&mut self, time: f64) {
         self.ctx.clear_rect(
-            0.into(),
-            0.into(),
-            self.canvas.width().into(),
-            self.canvas.height().into(),
-        );
-        self.ctx.fill_rect(
             0.into(),
             0.into(),
             self.canvas.width().into(),
@@ -83,11 +89,14 @@ impl Scene {
         // );
         Scene::apply_transforms(&mut tris, time);
         console::log_1(&JsValue::from_str("transform applied..."));
-        Scene::keep_visible(&mut tris, &self.camera.pos);
-        Scene::keep_visible(&mut tris, &self.camera.pos);
+        Scene::keep_visible(&mut tris, &self.camera.pos, Vec3D::new(0.0, 1.0, -1.0));
         console::log_2(
             &JsValue::from_str("nb visible tris: "),
             &JsValue::from_f64(tris.len() as f64),
+        );
+        console::log_2(
+            &JsValue::from_str("luminance after keep visible"),
+            &JsValue::from_f64(tris[0].l),
         );
 
         Scene::to_view(&mut tris, &mut self.camera);
@@ -96,6 +105,10 @@ impl Scene {
         //     &JsValue::from_f64(tris.len() as f64),
         // );
 
+        console::log_2(
+            &JsValue::from_str("luminance value after view:"),
+            &JsValue::from_f64(tris[0].l),
+        );
         // clip near plane
         Scene::clip_tris(
             &mut tris,
@@ -111,6 +124,10 @@ impl Scene {
         //     &JsValue::from_str("projected..."),
         //     &JsValue::from_f64(tris.len() as f64),
         // );
+        console::log_2(
+            &JsValue::from_str("luminance value after project:"),
+            &JsValue::from_f64(tris[0].l),
+        );
         Scene::to_ndc(&mut tris);
         // console::log_2(
         //     &JsValue::from_str("to_ndc..."),
@@ -162,12 +179,26 @@ impl Scene {
         ctx.stroke();
     }
 
+    fn luminance_to_rgb(luminance: f64) -> JsValue {
+        format!(
+            "rgb({},{},{})",
+            (luminance * 255.0) as u8,
+            (luminance * 255.0) as u8,
+            (luminance * 255.0) as u8,
+        )
+        .into()
+    }
+
     fn draw_tri(tri: &Tri3D, ctx: &mut web_sys::CanvasRenderingContext2d) {
         ctx.begin_path();
         ctx.move_to(tri[0][0], tri[0][1]);
         ctx.line_to(tri[1][0], tri[1][1]);
         ctx.line_to(tri[2][0], tri[2][1]);
-        ctx.set_fill_style(&"rgb(255,255,255)".into());
+        console::log_2(
+            &JsValue::from_str("luminance value drawing:"),
+            &JsValue::from_f64(tri.l),
+        );
+        ctx.set_fill_style(&Self::luminance_to_rgb(tri.l));
         ctx.fill();
     }
 
@@ -199,8 +230,10 @@ impl Scene {
     }
 
     // for some reasons, compiler crashes here if i don't obfuscate my code with arrays
-    fn keep_visible(tris: &mut Vec<Tri3D>, camera_pos: &Vec3D) {
+    fn keep_visible(tris: &mut Vec<Tri3D>, camera_pos: &Vec3D, mut light_direction: Vec3D) {
         let mut res = Vec::new();
+        light_direction = light_direction.normalized();
+
         for tri in tris.iter() {
             let t = [
                 tri[0].x, tri[0].y, tri[0].z, tri[1].x, tri[1].y, tri[1].z, tri[2].x, tri[2].y,
@@ -222,6 +255,10 @@ impl Scene {
                     Vec3D::new(t[3], t[4], t[5]),
                     Vec3D::new(t[6], t[7], t[8]),
                 ));
+
+                // compute luminance
+                let len = res.len();
+                res[len - 1].l = 0.1_f64.max(light_direction.dot_product(normal));
             }
         }
 

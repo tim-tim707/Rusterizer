@@ -9,6 +9,7 @@ pub struct Tri3D {
     pub a: Vec3D,
     pub b: Vec3D,
     pub c: Vec3D,
+    pub l: f64,
 }
 
 impl Index<u8> for Tri3D {
@@ -67,7 +68,11 @@ impl PartialEq for Tri3D {
 
 impl Tri3D {
     pub fn new(a: Vec3D, b: Vec3D, c: Vec3D) -> Tri3D {
-        Tri3D { a, b, c }
+        Tri3D { a, b, c, l: 0.0 }
+    }
+
+    pub fn new_with_luminance(a: Vec3D, b: Vec3D, c: Vec3D, l: f64) -> Tri3D {
+        Tri3D { a, b, c, l }
     }
 
     pub fn from_points(
@@ -85,11 +90,17 @@ impl Tri3D {
             a: Vec3D::new(a, b, c),
             b: Vec3D::new(d, e, f),
             c: Vec3D::new(g, h, i),
+            l: 0.0,
         }
     }
 
     pub fn mul(&self, other: &Mat3D) -> Tri3D {
-        Tri3D::new(self.a.mul(&other), self.b.mul(&other), self.c.mul(&other))
+        Tri3D::new_with_luminance(
+            self.a.mul(&other),
+            self.b.mul(&other),
+            self.c.mul(&other),
+            self.l,
+        )
     }
 
     pub fn clip(
@@ -142,7 +153,7 @@ impl Tri3D {
         }
 
         if inside_points_count == 1 && outside_points_count == 2 {
-            let out_tri = Tri3D::new(
+            let out_tri = Tri3D::new_with_luminance(
                 *inside_points[0].unwrap(),
                 Vec3D::intersect_plane(
                     plane_pos,
@@ -156,12 +167,13 @@ impl Tri3D {
                     inside_points[0].unwrap(),
                     outside_points[1].unwrap(),
                 ),
+                tri.l,
             );
             return (1, Some(out_tri), None);
         }
 
         // inside_points_count == 2 && outside_points_count == 1
-        let out_tri1 = Tri3D::new(
+        let out_tri1 = Tri3D::new_with_luminance(
             *inside_points[0].unwrap(),
             *inside_points[1].unwrap(),
             Vec3D::intersect_plane(
@@ -170,8 +182,9 @@ impl Tri3D {
                 inside_points[0].unwrap(),
                 outside_points[0].unwrap(),
             ),
+            tri.l,
         );
-        let out_tri2 = Tri3D::new(
+        let out_tri2 = Tri3D::new_with_luminance(
             *inside_points[1].unwrap(),
             out_tri1[2],
             Vec3D::intersect_plane(
@@ -180,6 +193,7 @@ impl Tri3D {
                 inside_points[1].unwrap(),
                 outside_points[0].unwrap(),
             ),
+            tri.l,
         );
 
         return (2, Some(out_tri1), Some(out_tri2));
