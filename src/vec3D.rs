@@ -67,7 +67,7 @@ impl Vec3D {
     }
 
     pub fn dot_product(self, other: Vec3D) -> f64 {
-        (self.x * other.x + self.y * other.y + self.z * other.z).sqrt()
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 
     pub fn length(self) -> f64 {
@@ -102,6 +102,6 @@ impl Vec3D {
         let line_start_to_end = *line_end - *line_start;
         let line_to_intersect = line_start_to_end.scale(t);
 
-        *line_start - line_to_intersect
+        *line_start + line_to_intersect
     }
 }

@@ -41,26 +41,6 @@ impl Scene {
                 Tri3D::from_points(1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0),
                 Tri3D::from_points(1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0),
                 Tri3D::from_points(1.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0),
-                // Tri2D::new(
-                //     Vec2D::new(0.9, 0.9),
-                //     Vec2D::new(0.1, 0.1),
-                //     Vec2D::new(0.5, 0.5),
-                // ),
-                // Tri2D::new(
-                //     Vec2D::new(0.8, 0.8),
-                //     Vec2D::new(0.7, 0.8),
-                //     Vec2D::new(0.7, 0.7),
-                // ),
-                // Tri2D::new(
-                //     Vec2D::new(0.4, 0.4),
-                //     Vec2D::new(0.4, 0.7),
-                //     Vec2D::new(0.7, 0.7),
-                // ),
-                // Tri2D::new(
-                //     Vec2D::new(-0.9, -0.9),
-                //     Vec2D::new(0.2, 0.7),
-                //     Vec2D::new(-0.3, -0.4),
-                // ),
             ]),
             camera: Camera::new(),
             projection_matrix: Mat3D::projection(90.0, screen_height / screen_width, 0.1, 1000.0),
@@ -108,24 +88,40 @@ impl Scene {
 
         let do_clip = false;
 
-        let mut tris: Vec<Tri3D> = self.tris.clone();
         console::log_2(
-            &JsValue::from_str("nb_tris: "),
-            &JsValue::from_f64(tris.len() as f64),
-        );
-        Scene::apply_transforms(&mut tris, time);
-        console::log_1(&JsValue::from_str("transform applied..."));
-        //Scene::keep_visible(&mut tris, &self.camera.pos);
-        console::log_2(
-            &JsValue::from_str("nb visible tris: "),
-            &JsValue::from_f64(tris.len() as f64),
+            &JsValue::from_str("camera settings: "),
+            &JsValue::from_str(
+                format!(
+                    "pos: ({},{},{}), look_at: ({},{},{})",
+                    self.camera.pos.x,
+                    self.camera.pos.y,
+                    self.camera.pos.z,
+                    self.camera.look_dir.x,
+                    self.camera.look_dir.y,
+                    self.camera.look_dir.z
+                )
+                .as_str(),
+            ),
         );
 
+        let mut tris: Vec<Tri3D> = self.tris.clone();
+        // console::log_2(
+        //     &JsValue::from_str("nb_tris: "),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
+        Scene::apply_transforms(&mut tris, time);
+        // console::log_1(&JsValue::from_str("transform applied..."));
+        //Scene::keep_visible(&mut tris, &self.camera.pos);
+        // console::log_2(
+        //     &JsValue::from_str("nb visible tris: "),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
+
         Scene::to_view(&mut tris, &mut self.camera);
-        console::log_2(
-            &JsValue::from_str("to view..."),
-            &JsValue::from_f64(tris.len() as f64),
-        );
+        // console::log_2(
+        //     &JsValue::from_str("to view..."),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
 
         if do_clip {
             // clip near plane
@@ -140,23 +136,23 @@ impl Scene {
             );
         }
         Scene::project(&mut tris, &self.projection_matrix);
-        console::log_2(
-            &JsValue::from_str("projected..."),
-            &JsValue::from_f64(tris.len() as f64),
-        );
+        // console::log_2(
+        //     &JsValue::from_str("projected..."),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
         Scene::to_ndc(&mut tris);
-        console::log_2(
-            &JsValue::from_str("to_ndc..."),
-            &JsValue::from_f64(tris.len() as f64),
-        );
+        // console::log_2(
+        //     &JsValue::from_str("to_ndc..."),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
         Scene::ndc_to_screen(&mut tris, self.canvas.width(), self.canvas.height());
-        console::log_2(
-            &JsValue::from_str("to_screen..."),
-            &JsValue::from_f64(tris.len() as f64),
-        );
+        // console::log_2(
+        //     &JsValue::from_str("to_screen..."),
+        //     &JsValue::from_f64(tris.len() as f64),
+        // );
         // sort via z coordinate
         tris.sort();
-        console::log_1(&JsValue::from_str("sorted..."));
+        // console::log_1(&JsValue::from_str("sorted..."));
 
         if do_clip {
             // clip each side of the screen
@@ -186,12 +182,12 @@ impl Scene {
             );
         }
         Scene::draw_from_vec(&tris, &mut self.ctx);
-        console::log_1(&JsValue::from_str("drew..."));
+        // console::log_2(&JsValue::from_str("drew..."));
     }
 
     fn apply_transforms(tris: &mut Vec<Tri3D>, time: f64) {
         let rotate_x = &Mat3D::rot_x(time);
-        let rotate_y = &Mat3D::rot_y(time);
+        //let rotate_y = &Mat3D::rot_y(time);
         let translation_vec = Vec3D::new(0.0, 0.0, 20.0);
 
         for tri in tris {
@@ -199,9 +195,9 @@ impl Scene {
             tri[1] = tri[1].mul(rotate_x);
             tri[2] = tri[2].mul(rotate_x);
 
-            tri[0] = tri[0].mul(rotate_y);
-            tri[1] = tri[1].mul(rotate_y);
-            tri[2] = tri[2].mul(rotate_y);
+            // tri[0] = tri[0].mul(rotate_y);
+            // tri[1] = tri[1].mul(rotate_y);
+            // tri[2] = tri[2].mul(rotate_y);
 
             tri[0] = tri[0] + translation_vec;
             tri[1] = tri[1] + translation_vec;
@@ -256,8 +252,8 @@ impl Scene {
         for tri in tris {
             for vertex in [tri[0], tri[1], tri[2]].iter_mut() {
                 vertex.x = -1.0 * (vertex.x / vertex.w);
-                vertex.y = -1.0 * (vertex.x / vertex.w);
-                vertex.z = -1.0 * (vertex.x / vertex.w);
+                vertex.y = -1.0 * (vertex.y / vertex.w);
+                vertex.z = vertex.z / vertex.w;
             }
         }
     }
@@ -278,6 +274,45 @@ impl Scene {
 
             tri[2].x = w * (tri[2].x + 1.0) * 0.5;
             tri[2].y = h * (tri[2].y + 1.0) * 0.5;
+        }
+    }
+
+    pub fn input(&mut self, key: String) {
+        let forward = self.camera.look_dir.scale(8.0);
+        match key.as_str() {
+            "w" => {
+                console::log_1(&JsValue::from_str("front"));
+                self.camera.pos = self.camera.pos + forward;
+            }
+            "a" => {
+                console::log_1(&JsValue::from_str("left"));
+                self.camera.pos.x -= 0.1;
+            }
+            "s" => {
+                console::log_1(&JsValue::from_str("back"));
+                self.camera.pos = self.camera.pos - forward;
+            }
+            "d" => {
+                console::log_1(&JsValue::from_str("right"));
+                self.camera.pos.x += 0.1;
+            }
+            "q" => {
+                console::log_1(&JsValue::from_str("rotate right"));
+                self.camera.yaw += 0.01;
+            }
+            "e" => {
+                console::log_1(&JsValue::from_str("rotate left"));
+                self.camera.yaw -= 0.01;
+            }
+            "j" => {
+                console::log_1(&JsValue::from_str("down"));
+                self.camera.pos.y += 0.1;
+            }
+            "k" => {
+                console::log_1(&JsValue::from_str("up"));
+                self.camera.pos.y -= 0.1;
+            }
+            _ => console::log_1(&JsValue::from_str(key.as_str())),
         }
     }
 }

@@ -97,9 +97,10 @@ impl Tri3D {
         plane_pos: &Vec3D,
         plane_normal: &Vec3D,
     ) -> (u8, Option<Tri3D>, Option<Tri3D>) {
+        let plane_n = plane_normal.normalized();
+
         let dist = |p: &Vec3D| -> f64 {
-            plane_normal.x * p.x + plane_normal.y * p.y + plane_normal.z * p.z
-                - plane_normal.dot_product(*plane_pos)
+            plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - plane_n.dot_product(*plane_pos)
         };
 
         let mut inside_points: [Option<&Vec3D>; 3] = [None, None, None];
@@ -145,13 +146,13 @@ impl Tri3D {
                 *inside_points[0].unwrap(),
                 Vec3D::intersect_plane(
                     plane_pos,
-                    &plane_normal,
+                    &plane_n,
                     inside_points[0].unwrap(),
                     outside_points[0].unwrap(),
                 ),
                 Vec3D::intersect_plane(
                     plane_pos,
-                    &plane_normal,
+                    &plane_n,
                     inside_points[0].unwrap(),
                     outside_points[1].unwrap(),
                 ),
@@ -165,7 +166,7 @@ impl Tri3D {
             *inside_points[1].unwrap(),
             Vec3D::intersect_plane(
                 plane_pos,
-                &plane_normal,
+                &plane_n,
                 inside_points[0].unwrap(),
                 outside_points[0].unwrap(),
             ),
@@ -175,7 +176,7 @@ impl Tri3D {
             out_tri1[2],
             Vec3D::intersect_plane(
                 plane_pos,
-                &plane_normal,
+                &plane_n,
                 inside_points[1].unwrap(),
                 outside_points[0].unwrap(),
             ),

@@ -25,15 +25,20 @@ const isPaused = () => {
 };
 
 const playPauseButton = document.getElementById("play-pause");
+const scene_input = (event) => {
+    scene.input(event.key);
+}
 
 const play = () => {
     playPauseButton.textContent = "⏸";
+    document.addEventListener("keypress", scene_input);
     renderLoop();
 };
 
 const pause = () => {
     playPauseButton.textContent = "▶";
     cancelAnimationFrame(animationId);
+    document.removeEventListener("keypress", scene_input);
     animationId = null;
 };
 

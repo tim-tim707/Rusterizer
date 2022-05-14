@@ -70,9 +70,9 @@ impl Mat3D {
     pub fn rot_x(alpha: f64) -> Mat3D {
         Mat3D {
             data: [
-                [alpha.cos(), -alpha.sin(), 0.0, 0.0],
-                [alpha.sin(), alpha.cos(), 0.0, 0.0],
-                [0.0, 0.0, 1.0, 0.0],
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, alpha.cos(), alpha.sin(), 0.0],
+                [0.0, -alpha.sin(), alpha.cos(), 0.0],
                 [0.0, 0.0, 0.0, 1.0],
             ],
         }
@@ -87,13 +87,25 @@ impl Mat3D {
             ],
         }
     }
+
     pub fn rot_z(gamma: f64) -> Mat3D {
         Mat3D {
             data: [
-                [1.0, 0.0, 0.0, 0.0],
-                [0.0, gamma.cos(), -gamma.sin(), 0.0],
-                [0.0, gamma.sin(), gamma.cos(), 0.0],
+                [gamma.cos(), gamma.sin(), 0.0, 0.0],
+                [-gamma.sin(), gamma.cos(), 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
                 [0.0, 0.0, 0.0, 1.0],
+            ],
+        }
+    }
+
+    pub fn translation(x: f64, y: f64, z: f64) -> Mat3D {
+        Mat3D {
+            data: [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [x, y, z, 1.0],
             ],
         }
     }
@@ -125,11 +137,12 @@ impl Mat3D {
             ],
         }
     }
-    pub fn point_at(pos: Vec3D, target: Vec3D, up: Vec3D) -> Mat3D {
-        let new_forward = (target - pos).normalized();
+
+    pub fn point_at(pos: &Vec3D, target: &Vec3D, up: &Vec3D) -> Mat3D {
+        let new_forward = (*target - *pos).normalized();
 
         let tmp = new_forward.scale(up.dot_product(new_forward));
-        let new_up = (up - tmp).normalized();
+        let new_up = (*up - tmp).normalized();
 
         let new_right = new_up.cross_product(new_forward);
 

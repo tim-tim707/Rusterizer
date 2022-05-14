@@ -25,7 +25,7 @@ impl Camera {
         self.look_dir = Vec3D::new(0.0, 0.0, 1.0).mul(&camera_rotation_y);
 
         let target = self.pos + self.look_dir;
-        let camera_mat = Mat3D::point_at(self.pos, target, Vec3D::new(0.0, 1.0, 0.0));
+        let camera_mat = Mat3D::point_at(&self.pos, &target, &Vec3D::new(0.0, 1.0, 0.0));
         self.view_mat = camera_mat.quick_inverse();
     }
 
