@@ -1,29 +1,36 @@
-<div align="center">
+# Rustcaster
+> A raycaster implementation build in rust web assembly.
+> Inspired by One Lone Coder 3D Engine serie https://github.com/OneLoneCoder/videos
+> Inspired by rust wasm tutorial: https://rustwasm.github.io/book/game-of-life/introduction.html
 
-  <h1><code>wasm_game_of_life</code></h1>
+## Introduction
+In order to display 3D models, computers use either Raytracing
+(light simulation) or Raycasting algorithm. The latter is much faster and uses
+triangles as well as linear algebra to render images.
 
-  <strong>Conway's Game of Life in Rust and WebAssembly</strong>
+#### Pipeline overview:
+Triangles are subjects to the following actions:
+- Stored in a list according to the 3D models in the scene to be
+  rendered
+- Transformed (rotation, translation, scaling) via matrix multiplication
+- Backface Culling (removed if their normal is not in the right direction)
+- Changed to camera view coordinate space
+- Clipped from the near clipping plane
+- Projected to screen space
+- Normalized to coordinate system [-1,-1] -> [+1,+1]
+- Computed to pixel space [0,0] -> [screen width, screen height]
+- Sorted via depth buffer (In order to draw far triangles first)
+- Clipped against all four screen borders
+- Drawn
 
-  <p>
-    <a href="https://travis-ci.org/rustwasm/wasm_game_of_life"><img src="https://img.shields.io/azure-devops/build/rustwasm/gloo/6.svg?style=flat-square" alt="Build Status" /></a>
-  </p>
+## Project Usage
 
-  <h3>
-    <a href="https://github.com/rustwasm/book/blob/master/CONTRIBUTING.md">Contributing</a>
-    <span> | </span>
-    <a href="https://discordapp.com/channels/442252698964721669/443151097398296587">Chat</a>
-  </h3>
+```
+$ npm init wasm-app
+$ wasm-build pack [--debug|--release]
+$ cd www && npm run start
+```
 
-  <sub>Built with 🦀🕸 by <a href="https://rustwasm.github.io/">The Rust and WebAssembly Working Group</a></sub>
-</div>
+## License
 
-## About
-
-This repository contains the complete code for the Rust and WebAssembly
-tutorial. The tutorial builds increasingly featureful implementations of
-[Conway's Game of Life][game-of-life].
-
-### [Read the tutorial here!][tutorial]
-
-[game-of-life]: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
-[tutorial]: https://rustwasm.github.io/book/game-of-life/introduction.html
+* MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
