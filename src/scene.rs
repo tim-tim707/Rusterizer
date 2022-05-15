@@ -166,7 +166,7 @@ impl Scene {
     }
 
     fn apply_transforms(tris: &mut Vec<Tri3D>, time: f64) {
-        let rotate_x = &Mat3D::rot_x(time);
+        let rotate_x = &Mat3D::rot_x(time * 1.3);
         let rotate_y = &Mat3D::rot_y(time);
         let translation_vec = Vec3D::new(0.0, 0.0, 20000.0);
 

@@ -23,6 +23,8 @@ Triangles are subjects to the following actions:
 - Clipped against all four screen borders
 - Drawn
 
+![Teapot spinning rendered by this algorithm](teapot.gif)
+
 ## Project Usage
 
 ```
