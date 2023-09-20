@@ -1,11 +1,11 @@
-# Rustcaster
-> A raycaster implementation build in rust web assembly.
+# Rusterizer
+> A rasterizer implementation build in rust web assembly.
 > Inspired by One Lone Coder 3D Engine serie https://github.com/OneLoneCoder/videos
 > Inspired by rust wasm tutorial: https://rustwasm.github.io/book/game-of-life/introduction.html
 
 ## Introduction
 In order to display 3D models, computers use either Raytracing
-(light simulation) or Raycasting algorithm. The latter is much faster and uses
+(light simulation) or Rasterizing algorithm. The latter is much faster and uses
 triangles as well as linear algebra to render images.
 
 #### Pipeline overview:
